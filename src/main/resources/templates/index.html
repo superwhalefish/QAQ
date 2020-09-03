@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<title>收藏册子</title>
+
+<!-- Bootstrap core CSS -->
+<link href="js/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="css/clean-blog.min.css" rel="stylesheet">
+<script src="js/axios.js"></script>
+<script src="js/vue.js"></script>
+
+</head>
+
+<body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-expand-lg navbar-light fixed-top"
+		id="mainNav">
+		<div class="container">
+			<a class="navbar-brand" href="login">welcome</a>
+			<button class="navbar-toggler navbar-toggler-right" type="button"
+				data-toggle="collapse" data-target="#navbarResponsive"
+				aria-controls="navbarResponsive" aria-expanded="false"
+				aria-label="Toggle navigation">
+				菜单 <i class="fas fa-bars"></i>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarResponsive">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item"><a class="nav-link" href="index">主页</a></li>
+					<li class="nav-item"><a class="nav-link" href="photo">图片日志</a>
+					</li>
+					<li class="nav-item"><a class="nav-link" href="video">视频日志</a>
+					</li>
+					<li class="nav-item"><a class="nav-link" href="contact">联系我们</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Page Header -->
+	<header class="masthead"
+		style="background-image: url('img/home-bg.jpg')">
+		<div class="overlay"></div>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-md-10 mx-auto">
+					<div class="site-heading">
+						<h1>时光册子</h1>
+						<span class="subheading">一个响应式的收藏册子</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Main Content -->
+	<div class="container">
+		<div class="row" id="app">
+
+			<div class="col-lg-8 col-md-10 mx-auto" v-for="(item,index) in hList">
+				<div class="post-preview">
+					<a href="post.html">
+						<h2 class="post-title">{{item.h_title}}</h2>
+						<h3 class="post-subtitle">
+							<p>{{item.h_content}}</p>
+						</h3>
+					</a>
+					<p class="post-meta">
+						<a href="#">作者：{{item.h_author}}</a>|| {{item.h_time}}
+					</p>
+				</div>
+				<hr>
+			</div>
+		</div>
+	</div>
+
+	<hr>
+
+	<!-- Footer -->
+	<footer>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-md-10 mx-auto">
+					<p class="copyright text-muted">创作联系方式：superwhalefish@163.com</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	<script src="js/jquery/jquery.min.js"></script>
+	<script src="js/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+<script>
+	var app = new Vue({
+		el : "#app",
+		data : {
+			hList: []
+		},
+		mounted:function(){
+			this.getJock();
+		},
+		methods : {
+			getJock : function() {
+				var that = this;
+				axios.get("getHome").then(function(res) {
+					console.log(res);
+					that.hList = res.data
+				}, function(err) {
+					console.log(err);
+				})
+			}
+		}
+	})
+	/* 	document.querySelector(".get").onclick=function(){
+			axios.get("https://autumnfish.cn/api/joke/list?num=3").then(function(res){
+				console.log(res);
+			},function(err){
+					console.log(err);
+			})
+		} */
+	// document.querySelector(".post").onclick=function(){
+	// 	axios.get().then(function(res){
+	// 		console.log(res);
+	// 	},function(err){
+	// 			console.log(err);
+	// 	})
+	// 	axios.post("https://autumnfish.cn/api/user/reg",{username:"jack"}).then(function(res){
+	// 		console.log(res)
+	// 	},function(err){
+	// 		console.log(err)
+	// 	})
+	// }
+	//axios.get(地址？key=value&key2=value2).then(function(res){},function(err){})
+	//axios.post(地址,{key:value,key2:value2}).then(function(res){},function(err){})
+</script>
+</html>

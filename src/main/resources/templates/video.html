@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<title>视频日志</title>
+
+<!-- Bootstrap core CSS -->
+<link href="js/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="css/clean-blog.min.css" rel="stylesheet">
+<style type="text/css">
+#leftbody {
+	width: 130px;
+	position: fixed;
+	top: 37%;
+	left: 0;
+	border: 1px solid black;
+	z-index: 2;
+	background-color: white;
+	opacity: 0.6;
+}
+</style>
+</head>
+<script src="js/axios.js"></script>
+<script src="js/vue.js"></script>
+<body>
+
+	<!-- Navigation -->
+	<nav class="navbar navbar-expand-lg navbar-light fixed-top"
+		id="mainNav">
+		<div class="container">
+			<a class="navbar-brand" href="login">welcome</a>
+			<button class="navbar-toggler navbar-toggler-right" type="button"
+				data-toggle="collapse" data-target="#navbarResponsive"
+				aria-controls="navbarResponsive" aria-expanded="false"
+				aria-label="Toggle navigation">
+				菜单 <i class="fas fa-bars"></i>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarResponsive">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item"><a class="nav-link" href="index">主页</a></li>
+					<li class="nav-item"><a class="nav-link" href="photo">图片日志</a>
+					</li>
+					<li class="nav-item"><a class="nav-link" href="video">视频日志</a>
+					</li>
+					<li class="nav-item"><a class="nav-link" href="contact">联系我们</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<!-- Page Header -->
+	<header class="masthead"
+		style="background-image: url('img/post-bg.jpg')">
+		<div class="overlay"></div>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-md-10 mx-auto">
+					<div class="post-heading">
+						<h1>视频收藏页</h1>
+						<h2 class="subheading">时光片段</h2>
+						<span class="meta">作者 <a href="#">whale</a> 时间
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Post Content -->
+
+	<div class="container" id="app">
+		<div id="leftbody">
+			<div style="padding-left: 28%; padding-top: 8%;">目录</div>
+			<hr />
+			<ul style="padding-left: 30%; list-style: none">
+				<li v-for="(item,index) in cvList"
+					style="padding-bottom: 10px; font-family: sans-serif;"><a
+					href="javascript:void(0)" @click="findByCode(item.cate_code)">{{item.cate_video}}</a></li>
+			</ul>
+		</div>
+
+		<div class="row">
+			<div class="col-lg-6 col-md-12 col-xs-auto"
+				v-for="(item,index) in vList">
+				<div class="media">
+					   
+					<div class="media-left" style="width: 40%; height: 60%;">
+						        
+						<video :src="item.v_url" class="img-thumbnail" controls="controls">
+							您的浏览器不支持 video 标签,请更换浏览器
+						</video>
+						   
+					</div>
+					    
+					<div class="media-body" style="width: 60%; height: 60%;">
+						       
+						<h4 class="media-heading">{{item.v_title}}</h4>
+						<p>视频简介:{{item.v_content}}</p>
+						     <small>日期：{{item.v_time}}</small> <br />         <small
+							style="float: right">作者|{{item.v_author}}</small>   
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<hr>
+	<script type="text/javascript">
+		var app = new Vue({
+			el : "#app",
+			data : {
+				vList : [],
+				cvList : []
+			},
+			mounted : function() {
+				this.initCatevideo();
+				this.initVideo();
+			},
+			methods : {
+				initVideo : function() {
+					var that = this;
+					axios.get("getVideoAll").then(function(res) {
+						console.log(res.data)
+						that.vList = res.data;
+					}, function(err) {
+						console.log(err)
+					})
+
+				},
+				initCatevideo : function() {
+					var that = this;
+					axios.get("getCatevideo").then(function(res) {
+						console.log(res.data)
+						that.cvList = res.data;
+					}, function(err) {
+						console.log(err)
+					})
+				},
+				findByCode : function(cate_code) {
+					console.log(cate_code);
+					var that=this;
+					$.post("findVideoByCate_code", {
+						cate_code:cate_code
+					}, function(res) {
+						that.vList = res;
+					}, "json")
+				}
+			}
+
+		})
+	</script>
+	<footer>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-md-10 mx-auto">
+					<p class="copyright text-muted">创作联系方式：superwhalefish@163.com</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<script src="js/jquery/jquery.min.js"></script>
+	<script src="js/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

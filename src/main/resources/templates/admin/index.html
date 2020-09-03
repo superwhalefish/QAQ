@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>后台数据管理系统</title>
+<script src="/QAQ/js/jquery/jquery.min.js"></script>
+<script src="/QAQ/js/bootstrap/js/bootstrap.bundle.min.js"></script>
+<link href="/QAQ/js/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="/QAQ/css/clean-blog.min.css" rel="stylesheet">
+<link href="/QAQ/js/bootstrap/css/bootstrap-datetimepicker.css"
+	rel="stylesheet">
+<script type="text/javascript" src="/QAQ/js/vue.js"></script>
+<script type="text/javascript" src="/QAQ/js/axios.js"></script>
+<script type="text/javascript"
+	src="/QAQ/js/bootstrap/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript"
+	src="/QAQ/js/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<link href="/QAQ/js/layui/css/layui.css" rel="stylesheet">
+<script src="/QAQ/js/layui/layui.js"></script>
+</head>
+<body>
+
+	<nav class="navbar navbar-expand-lg navbar-light fixed-top"
+		id="mainNav">
+		<div class="container">
+			<!-- <a class="navbar-brand" href="login">welcome</a> -->
+			<button class="navbar-toggler navbar-toggler-right" type="button"
+				data-toggle="collapse" data-target="#navbarResponsive"
+				aria-controls="navbarResponsive" aria-expanded="false"
+				aria-label="Toggle navigation">
+				菜单 <i class="fas fa-bars"></i>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarResponsive">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item"><a class="nav-link" href="photo">首页简介</a>
+					</li>
+					<li class="nav-item"><a class="nav-link" href="photo">图片管理</a>
+					</li>
+					<li class="nav-item"><a class="nav-link" href="video">视频管理</a>
+					</li>
+					<li class="nav-item"><a class="nav-link" href="contact">联系我们</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<header class="masthead"
+		style="background-image: url('/QAQ/img/admin.jpg')">
+		<div class="overlay"></div>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-md-10 mx-auto">
+					<div class="site-heading">
+						<h1>时光册子</h1>
+						<span class="subheading">偷偷查看的相册的小秘密</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<div class="container" id="app">
+		<div class="row">
+			<div class="col-lg-4 col-md-2 mx-6">
+				<div class="post-preview text-center">
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item"><a class="nav-link" href="#"
+							@click="initHome">首页简介</a></li>
+						<li class="nav-item"><a class="nav-link" href="#"
+							@click="initBackground">背景管理</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="col-lg-8 col-md-10 mx-6">
+				<div class="post-preview">
+					<div style="width: 100%; height: 100%">
+						<table v-if="isShowHomeInfo" class="table"
+							v-for="(item,index) in home">
+							<tr>
+								<td>标题</td>
+								<td>
+									<div class="input-group">
+										<input type="text" class="form-control" v-model="item.h_title">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>内容</td>
+								<td>
+									<div class="input-group">
+										<textarea class="form-control" rows="3">{{item.h_content}}</textarea>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>时间</td>
+								<td>
+									<div class="input-group">
+										<input type="text" class="form-control" v-model="item.h_time">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>作者</td>
+								<td>
+									<div class="input-group">
+										<input type="text" class="form-control"
+											v-model="item.h_author">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" class="text-center"><input type="button"
+									class="btn-link" value="保存"> <input type="button"
+									class="btn-link" value="取消"></td>
+							</tr>
+						</table>
+
+						<div v-if="isShowBackground">
+							{{background.test}}
+							<table id="demo" lay-filter="test"></table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-md-10 mx-auto">
+					<p class="copyright text-muted">创作联系方式：superwhalefish@163.com</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<script type="text/html" id="toolbar">
+		背景名字：<input type="text" value=""  id="searchb_name"/>
+使用状态：
+  <div class="layui-input-inline">
+        <select id="searchb_state" lay-verify="required" lay-search="">
+          <option value="">--请选择--</option>
+          <option value="1">已使用</option>
+          <option value="2">未使用</option>
+        </select>
+      </div>
+
+<a href="javascript:void(0)" class="layui-btn layui-btn-xs" @click="initBackground()">搜索</a>
+	</script>
+</body>
+<script type="text/javascript">
+	var app = new Vue(
+			{
+				el : "#app",
+				data : {
+					home : [],
+					background : [],
+					isShowHomeInfo : true,
+					isShowBackground : false
+				},
+				mounted : function() {
+					this.initHome();
+				},
+				methods : {
+					initHome : function() {
+						this.isShowHomeInfo = true;
+						this.isShowBackground = false;
+						var that = this;
+						axios.get("/QAQ/admin/getAdminHome").then(
+								function(res) {
+									console.log(res);
+									that.home = res.data
+								}, function(err) {
+									console.log(err);
+								})
+					},
+					backgroundedit : function(id){
+						alert("这是编辑框"+id+"号")
+					},
+					backgrounddel : function(id){
+						alert("这是删除"+id+"号")
+					},
+					initBackground : function() {
+		
+						this.isShowHomeInfo = false;
+						this.isShowBackground = true;
+						var that = this;
+						layui
+								.use(
+										'table',
+										function() {
+											var table = layui.table;
+											//第一个实例
+											table
+													.render({
+														elem : '#demo',
+														height : 312,
+														url : '/QAQ/admin/getAdminBackground' //数据接口
+														,
+														page : true //开启分页
+														,
+														loading : true,
+														where : {
+															b_name :$("#searchb_name").val(),
+															b_state : $("#searchb_state").val()
+														},
+														toolbar : "#toolbar",
+														method : "post",
+														cols : [ [ 
+																{
+																	field : 'id',
+																	title : 'ID',
+																	sort : true,
+																	fixed : 'left'
+																},
+																{
+																	field : 'b_code',
+																	title : '背景码'
+																},
+																{
+																	field : 'b_name',
+																	title : '名称'
+																},
+																{
+																	field : 'b_time',
+																	title : '时间'
+																},
+																{
+																	field : 'b_state',
+																	title : '状态'
+																},
+																{
+																	field : 'b_url',
+																	title : '图片'
+																},
+																{
+																	field : 'caozuo',
+																	title : '操作',
+																	templet : function(
+																			d) {
+																		return "<a class='layui-btn layui-btn-xs'onclick='backgroundedit("
+																				+ d.id
+																				+ ")' >编辑</a> <a class='layui-btn layui-btn-xs'onclick='backgrounddel("
+																				+ d.id
+																				+ ")' >删除</a>"
+																	}
+																} ] ],
+														limit : 5,
+														limits : [ 5, 20, 50 ]
+													});
+										});
+					}
+				}
+			})
+</script>
+</html>
